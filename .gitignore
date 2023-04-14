@@ -1,3 +1,4 @@
 /data/
 /catboost_info/
 /.pytest_cache/
+/.idea
