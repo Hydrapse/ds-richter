@@ -8,8 +8,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, f1_score
 from xgboost import XGBClassifier
 
-# DATA_DIR = "/home/gangda/workspace/ds-richter/data"
-DATA_DIR = "/Users/synapse/Desktop/Repository/pycharm-workspace/ds-richter/data"
+DATA_DIR = "/home/gangda/workspace/ds-richter/data"
 
 
 X = pd.read_csv(DATA_DIR + '/train_values.csv', index_col='building_id')
@@ -64,26 +63,38 @@ preprocessor = ColumnTransformer(transformers=[
     ("other", FunctionTransformer(validate=False), other_columns),
 ])
 
-# Create a pipeline with RandomForestClassifier
-model_rf = Pipeline(steps=[
-    ("preprocessor", preprocessor),
-    ("classifier", RandomForestClassifier(random_state=42))
-])
+# params = {
+#     'learning_rate': 0.1,
+#     'max_depth': 9,
+#     'n_estimators': 500,
+# }
+
+params = {
+    "alpha": 1.0336687780468972e-08,
+    "booster": "dart",
+    "colsample_bytree": 0.8084783568696962,
+    "eta": 0.7060309316847526,
+    "gamma": 3.063841666019444e-08,
+    "grow_policy": "depthwise",
+    "lambda": 5.828423161214793e-08,
+    "max_depth": 9,
+    "min_child_weight": 9,
+    "normalize_type": "tree",
+    "rate_drop": 0.004985511644199345,
+    "sample_type": "uniform",
+    "skip_drop": 0.002018807572514812,
+    "subsample": 0.8535274668555554
+}
+
 
 # Create a pipeline with XGBClassifier
 model_xgb = Pipeline(steps=[
     ("preprocessor", preprocessor),
-    ("classifier", XGBClassifier(random_state=42))
+    ("classifier", XGBClassifier(random_state=42, **params))
 ])
 
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# # Train and evaluate the RandomForestClassifier
-# model_rf.fit(X_train, y_train)
-# y_pred_rf = model_rf.predict(X_test)
-# print("RandomForestClassifier classification report:")
-# print(classification_report(y_test, y_pred_rf))
 
 # Train and evaluate the XGBClassifier
 model_xgb.fit(X_train, y_train)
@@ -92,7 +103,6 @@ print("XGBClassifier classification report:")
 print(classification_report(y_test, y_pred_xgb))
 
 # Choose the model with the best F1-score
-# f1_rf = f1_score(y_test, y_pred_rf, average='micro')
 f1_xgb = f1_score(y_test, y_pred_xgb, average='micro')
 print("Score on test set")
 print("\n ========================================================")
@@ -100,17 +110,17 @@ print("\n ========================================================")
 print('f1_xgb', f1_xgb)
 
 
-# # Preprocess the data
+# # # Preprocess the data
 # X_processed = preprocessor.fit_transform(X_train)
 #
 # # Set up the parameter grid for XGBoost
 # param_grid = {
 #     "learning_rate": [0.01, 0.1, 0.2],
-#     "max_depth": [3, 6, 9],
-#     "min_child_weight": [1, 5, 10],
-#     "subsample": [0.5, 0.7, 1.0],
-#     "colsample_bytree": [0.5, 0.7, 1.0],
-#     "n_estimators": [100, 200, 500],
+#     "max_depth": [9],
+#     # "min_child_weight": [1, 5, 10],
+#     # "subsample": [0.5, 0.7, 1.0],
+#     # "colsample_bytree": [0.5, 0.7, 1.0],
+#     "n_estimators": [500],
 # }
 #
 # # Perform Grid Search
